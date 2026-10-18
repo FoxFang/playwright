@@ -1,4 +1,6 @@
 package dev.playwright.context;
+import dev.playwright.context.model.RelevanceOverride;
+import dev.playwright.context.model.RelevanceSettings;
 import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;

@@ -1,4 +1,7 @@
 package dev.playwright.canon;
+import dev.playwright.canon.model.CanonChange;
+import dev.playwright.canon.model.CanonEntity;
+import dev.playwright.canon.model.Universe;
 import java.time.Clock;
 import java.util.*;
 import org.springframework.dao.OptimisticLockingFailureException;

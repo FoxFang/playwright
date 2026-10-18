@@ -1,4 +1,6 @@
 package dev.playwright.context;
+import dev.playwright.context.model.RelevanceOverride;
+import dev.playwright.context.model.RelevanceSettings;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 class RelevanceSettingsTest {

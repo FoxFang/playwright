@@ -1,4 +1,6 @@
 package dev.playwright.context;
+import dev.playwright.context.model.CanonEvent;
+import dev.playwright.context.model.RelevanceSettings;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.Test;

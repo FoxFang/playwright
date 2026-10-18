@@ -1,4 +1,5 @@
 package dev.playwright.context;
+import dev.playwright.context.model.CanonEvent;
 import java.time.Clock;
 import java.util.*;
 import jakarta.validation.Valid;

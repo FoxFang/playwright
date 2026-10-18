@@ -1,4 +1,6 @@
 package dev.playwright.context;
+import dev.playwright.context.model.CanonEvent;
+import dev.playwright.context.model.RelevanceSettings;
 import dev.playwright.canon.UniverseRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Pageable;

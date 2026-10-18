@@ -1,4 +1,6 @@
 package dev.playwright.canon;
+import dev.playwright.canon.model.CanonEntity;
+import dev.playwright.canon.model.Universe;
 import java.util.List;
 import java.util.Map;
 import jakarta.validation.Valid;
