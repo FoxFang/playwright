@@ -4,6 +4,7 @@ import java.util.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import org.springframework.data.domain.PageRequest;
+import dev.playwright.canon.UniverseRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -11,11 +12,12 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/v1/universes/{universeId}")
 public class ContextController {
     private final CanonEventRepository events;
+    private final UniverseRepository universes;
     private final RelevanceSettingsService settings;
     private final ContextRanker ranker;
     private final Clock clock=Clock.systemUTC();
-    public ContextController(CanonEventRepository events,RelevanceSettingsService settings,ContextRanker ranker) {
-        this.events=events; this.settings=settings; this.ranker=ranker;
+    public ContextController(CanonEventRepository events,UniverseRepository universes,RelevanceSettingsService settings,ContextRanker ranker) {
+        this.events=events; this.universes=universes; this.settings=settings; this.ranker=ranker;
     }
     public record CreateEvent(@NotBlank String title,@NotBlank String summary,
         @NotEmpty List<@NotBlank String> tags, List<String> participants,
@@ -27,14 +29,18 @@ public class ContextController {
                                  List<String> unresolvedReferences) {}
     @PostMapping("/events") @ResponseStatus(HttpStatus.CREATED)
     public CanonEvent create(@PathVariable String universeId,@Valid @RequestBody CreateEvent body) {
-        // Universe existence is checked against the canonical universe collection in the next iteration.
+        requireUniverse(universeId);
         return events.save(new CanonEvent(UUID.randomUUID().toString(),universeId,body.title(),
             body.summary(),List.copyOf(body.tags()),
             body.participants()==null?List.of():List.copyOf(body.participants()),
             clock.instant(),body.worldTime(),body.source()));
     }
+    private void requireUniverse(String id) {
+        if (!universes.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Universe not found");
+    }
     @PostMapping("/context/resolve")
     public ContextPackage resolve(@PathVariable String universeId,@Valid @RequestBody ContextQuery query) {
+        requireUniverse(universeId);
         var secondary=query.secondary()==null?List.<String>of():query.secondary();
         if(secondary.size()>3 || secondary.contains(query.primary()) ||
            new HashSet<>(secondary).size()!=secondary.size())
