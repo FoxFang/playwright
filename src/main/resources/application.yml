@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: playwright
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/playwright}
+server:
+  error:
+    include-message: never
