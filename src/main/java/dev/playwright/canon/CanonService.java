@@ -4,12 +4,14 @@ import java.util.*;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 @Service
 public class CanonService {
     private final UniverseRepository universes;
     private final CanonEntityRepository entities;
     private final Clock clock;
+    @Autowired
     public CanonService(UniverseRepository universes, CanonEntityRepository entities) {
         this(universes, entities, Clock.systemUTC());
     }
