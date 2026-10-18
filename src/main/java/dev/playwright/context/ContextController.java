@@ -21,17 +21,20 @@ public class ContextController {
         this.events=events; this.universes=universes; this.sceneContext=sceneContext;
     }
     public record CreateEvent(@NotBlank String title,@NotBlank String summary,
-        @NotEmpty List<@NotBlank String> tags, List<String> participants,
+        @NotEmpty Map<String,List<String>> metadata, List<String> participants,
         String worldTime,@NotBlank String source) {}
     public record ContextQuery(@NotBlank String primary,List<String> secondary) {}
     @PostMapping("/events") @ResponseStatus(HttpStatus.CREATED)
     public CanonEvent create(@PathVariable String universeId,@Valid @RequestBody CreateEvent body) {
         if(!universes.existsById(universeId))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Universe not found");
-        return events.save(new CanonEvent(UUID.randomUUID().toString(),universeId,body.title(),
-            body.summary(),List.copyOf(body.tags()),
-            body.participants()==null?List.of():List.copyOf(body.participants()),
-            clock.instant(),body.worldTime(),body.source()));
+        try {
+            return events.save(new CanonEvent(UUID.randomUUID().toString(),universeId,body.title(),
+                body.summary(),body.metadata(),
+                body.participants(),clock.instant(),body.worldTime(),body.source()));
+        } catch(IllegalArgumentException error) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,error.getMessage(),error);
+        }
     }
     @PostMapping("/context/resolve")
     public SceneContextService.ContextPackage resolve(
