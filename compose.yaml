@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: .
+    image: playwright-api:local
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/playwright
+      JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=65 -XX:+UseContainerSupport"
+    ports:
+      - "127.0.0.1:${PLAYWRIGHT_PORT:-8080}:8080"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    mem_limit: 512m
+  mongo:
+    image: mongo:7.0
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    mem_limit: 768m
+volumes:
+  mongo_data:
