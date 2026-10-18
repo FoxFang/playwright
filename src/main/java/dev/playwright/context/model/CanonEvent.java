@@ -1,4 +1,4 @@
-package dev.playwright.context;
+package dev.playwright.context.model;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.data.annotation.Id;

@@ -1,4 +1,4 @@
-package dev.playwright.context;
+package dev.playwright.context.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;

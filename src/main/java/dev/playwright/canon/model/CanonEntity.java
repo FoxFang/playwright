@@ -1,4 +1,4 @@
-package dev.playwright.canon;
+package dev.playwright.canon.model;
 import java.util.List;
 import java.util.Map;
 import org.springframework.data.annotation.Id;

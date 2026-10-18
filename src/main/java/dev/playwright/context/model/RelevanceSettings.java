@@ -1,4 +1,4 @@
-package dev.playwright.context;
+package dev.playwright.context.model;
 public record RelevanceSettings(
     double primaryTagWeight, double secondaryTagWeight, double crossDimensionBonus,
     double directConnectionBonus, double secondHopBonus,
