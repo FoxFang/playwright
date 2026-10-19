@@ -1,0 +1,9 @@
+primaryTagWeight: 10.0
+secondaryTagWeight: 4.0
+crossDimensionBonus: 3.0
+directConnectionBonus: 3.0
+secondHopBonus: 1.0
+maxDepth: 2
+maxCandidates: 200
+maxEvents: 12
+defaultTokenBudget: 3000
