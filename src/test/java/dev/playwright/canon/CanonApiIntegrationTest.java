@@ -86,4 +86,43 @@ class CanonApiIntegrationTest {
                    "facts",Map.of("rank","Captain")),String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test void persistsDimensionedMetadataAndRevisionHistory() throws Exception {
+        String u=universe();
+        JsonNode created=post("/api/v1/universes/"+u+"/entities",
+            Map.of("kind","character","name","Natalie Zorra",
+                "facts",Map.of("callsign","Silk"),
+                "metadata",Map.of("scene",new String[]{"valley-cas"},
+                                  "unit",new String[]{"fox-squadron"})),HttpStatus.CREATED);
+        String e=created.get("id").asText();
+        assertThat(created.path("metadata").path("scene").get(0).asText()).isEqualTo("valley-cas");
+        JsonNode revised=post("/api/v1/universes/"+u+"/entities/"+e+"/revisions",
+            Map.of("expectedRevision",0,"source","player-confirmed",
+                   "reason","new assignment",
+                   "metadata",Map.of("scene",new String[]{"valley-cas","base-operations"})),
+            HttpStatus.OK);
+        assertThat(revised.path("revision").asLong()).isEqualTo(1);
+        assertThat(revised.path("metadata").path("unit").get(0).asText()).isEqualTo("fox-squadron");
+        assertThat(revised.path("metadata").path("scene").size()).isEqualTo(2);
+        assertThat(revised.path("history").get(0).path("metadata").path("scene").size()).isEqualTo(2);
+        ResponseEntity<String> bad=http.postForEntity(
+            "/api/v1/universes/"+u+"/entities",
+            Map.of("kind","character","name","Bad","facts",Map.of(),
+                   "metadata",Map.of("Not Valid",new String[]{"x"})),String.class);
+        assertThat(bad.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+    @Test void eventPostAcceptsMultidimensionalMetadata() throws Exception {
+        String u=universe();
+        JsonNode event=post("/api/v1/universes/"+u+"/events",
+            Map.of("title","Northern Shilka ambush",
+                   "summary","A concealed SPAAG awaits Southern CAS.",
+                   "metadata",Map.of("scene",new String[]{"valley-cas"},
+                                     "status",new String[]{"unresolved","concealed"}),
+                   "source","player-confirmed"),HttpStatus.CREATED);
+        assertThat(event.path("metadata").path("scene").get(0).asText()).isEqualTo("valley-cas");
+        JsonNode context=post("/api/v1/universes/"+u+"/context/resolve",
+            Map.of("primary","scene:valley-cas","secondary",new String[]{}),HttpStatus.OK);
+        assertThat(context.path("events").size()).isEqualTo(1);
+        assertThat(context.path("events").get(0).path("title").asText()).isEqualTo("Northern Shilka ambush");
+    }
 }
